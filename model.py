@@ -21,3 +21,9 @@ def stable_softmax(logits):
     # Step 3: Normalize along the last axis
     return exp_z / np.sum(exp_z, axis=-1, keepdims=True)
 
+# Step 2 - apply_temperature
+def apply_temperature(logits, temperature):
+    # TODO: scale logits by 1 / temperature; if temperature <= 0, return logits unchanged (greedy).
+    logits = np.array(logits)
+    return logits*(1/temperature) if temperature > 0 else logits
+
