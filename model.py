@@ -58,3 +58,40 @@ def top_k_filter(logits, k):
 
     return result
 
+# Step 4 - top_p_filter
+def top_p_filter(logits, p):
+    # TODO: keep smallest set of tokens whose cumulative prob >= p, mask the rest to -inf.
+    logits = np.asarray(logits, dtype=float)
+
+    # Step 1: Calculate probabilities
+    probs = stable_softmax(logits)
+
+    # Step 2: Sort descending, preserving ties
+    indices = np.argsort(-probs, axis=-1, kind="stable")
+
+    # Step 3: Get sorted probabilities
+    sorted_probs = np.take_along_axis(
+        probs, indices, axis=-1
+    )
+
+    # Step 4: Cumulative probability
+    cumulative = np.cumsum(sorted_probs, axis=-1)
+
+    # Step 5: Keep tokens until cumulative probability >= p
+    keep = (cumulative - sorted_probs) < p
+
+    # Step 6: Sort original logits
+    sorted_logits = np.take_along_axis(
+        logits, indices, axis=-1
+    )
+
+    # Step 7: Filter
+    filtered = np.where(keep, sorted_logits, -np.inf)
+
+    # Step 8: Restore original order
+    original_order = np.argsort(indices, axis=-1)
+
+    return np.take_along_axis(
+        filtered, original_order, axis=-1
+    )
+
