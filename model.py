@@ -105,3 +105,33 @@ def greedy_select(logits):
     # TODO: return the index of the maximum logit (ties -> lowest index).
     return int(np.argmax(logits))
 
+# Step 7 - build_vocab
+def build_vocab(corpus, special_tokens):
+    # TODO: build a character-level vocab; specials get the lowest ids, then sorted unique chars.
+    token_to_id = {}
+    id_to_token = []
+
+    # 1. Add special tokens first
+    for token in special_tokens:
+        if token not in token_to_id:
+            token_to_id[token] = len(id_to_token)
+            id_to_token.append(token)
+
+    # 2. Get all unique characters from corpus
+    chars = set()
+
+    for text in corpus:
+        for char in text:
+            chars.add(char)
+
+    # 3. Add remaining characters in sorted order
+    for char in sorted(chars):
+        if char not in token_to_id:
+            token_to_id[char] = len(id_to_token)
+            id_to_token.append(char)
+
+    return {
+        "token_to_id": token_to_id,
+        "id_to_token": id_to_token
+    }
+
