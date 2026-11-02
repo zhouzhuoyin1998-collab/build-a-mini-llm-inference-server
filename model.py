@@ -100,3 +100,8 @@ def sample_from_probs(probs, rng):
     # TODO: draw a single token id from the categorical distribution probs using rng
     return int(rng.choice(len(probs), p=probs))
 
+# Step 6 - greedy_select
+def greedy_select(logits):
+    # TODO: return the index of the maximum logit (ties -> lowest index).
+    return int(np.argmax(logits))
+
