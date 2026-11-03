@@ -197,3 +197,25 @@ def init_kv_cache(max_seq_len, d_model):
         "length": 0
     }
 
+# Step 13 - append_kv
+import numpy as np
+
+def append_kv(cache, k_new, v_new):
+    # TODO: write k_new and v_new into the cache starting at cache['length'] and bump length.
+    start = cache["length"]
+
+    # Step 2: Number of new tokens
+    t = k_new.shape[0]
+
+    # Step 3: Calculate ending position
+    end = start + t
+
+    # Step 4: Write new K and V into cache
+    cache["K"][start:end] = k_new
+    cache["V"][start:end] = v_new
+
+    # Step 5: Update the length
+    cache["length"] = end
+
+    return cache
+
