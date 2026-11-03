@@ -219,3 +219,29 @@ def append_kv(cache, k_new, v_new):
 
     return cache
 
+# Step 14 - causal_attention
+import numpy as np
+
+def causal_attention(q, k, v, is_causal=True):
+    # TODO: scaled dot-product attention with optional causal mask, returns (Tq, D)
+    d_k = q.shape[-1]
+    scores = (q @ k.T) / np.sqrt(d_k)
+
+    # Step 2: Apply causal mask
+    if is_causal:
+        Tq = q.shape[0]
+        Tk = k.shape[0]
+
+        i = np.arange(Tq)[:, None]
+        j = np.arange(Tk)[None, :]
+
+        mask = j > i + (Tk - Tq)
+
+        scores = np.where(mask, -np.inf, scores)
+
+    # Step 3: Softmax
+    weights = stable_softmax(scores)
+
+    # Step 4: Weighted sum of Values
+    return weights @ v
+
