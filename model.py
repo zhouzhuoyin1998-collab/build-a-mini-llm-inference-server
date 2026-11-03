@@ -186,3 +186,14 @@ def linear_projection(x, weight, bias=None):
 
     return result
 
+# Step 12 - init_kv_cache
+import numpy as np
+
+def init_kv_cache(max_seq_len, d_model):
+    # TODO: allocate empty K and V buffers and a length counter for a single sequence
+    return {
+        "K": np.zeros((max_seq_len, d_model), dtype=np.float32),
+        "V": np.zeros((max_seq_len, d_model), dtype=np.float32),
+        "length": 0
+    }
+
