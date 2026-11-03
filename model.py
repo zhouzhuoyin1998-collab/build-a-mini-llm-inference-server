@@ -245,3 +245,45 @@ def causal_attention(q, k, v, is_causal=True):
     # Step 4: Weighted sum of Values
     return weights @ v
 
+# Step 15 - model_prefill
+def model_prefill(token_ids, params):
+    # TODO: embed tokens, project Q/K/V, fill the KV cache, run causal attention, return last-position logits.
+    # Step 1: Embed tokens
+    x = embed_tokens(token_ids, params["embedding"])
+
+    # Step 2: Q, K, V projections
+    q = linear_projection(x, params["Wq"])
+    k = linear_projection(x, params["Wk"])
+    v = linear_projection(x, params["Wv"])
+
+    # Step 3: Initialize KV cache
+    cache = init_kv_cache(
+        params["max_seq_len"],
+        x.shape[-1]
+    )
+
+    # Step 4: Store K and V
+    append_kv(cache, k, v)
+
+    # Step 5: Causal attention
+    attention = causal_attention(
+        q,
+        cache["K"][:cache["length"]],
+        cache["V"][:cache["length"]],
+        is_causal=True
+    )
+
+    # Step 6: Attention output projection
+    hidden = linear_projection(attention, params["Wo"])
+
+    # Step 7: Get last token representation
+    last_hidden = hidden[-1]
+
+    # Step 8: Project to vocabulary logits
+    logits = linear_projection(
+        last_hidden,
+        params["W_out"]
+    )
+
+    return logits, cache
+
