@@ -360,3 +360,22 @@ def init_block_allocator(num_blocks, block_size, d_model):
         "seq_tables": {}
     }
 
+# Step 19 - allocate_block
+def allocate_block(allocator, seq_id):
+    # TODO: pop one free block id and append it to allocator['seq_tables'][seq_id]; raise RuntimeError if OOM.
+    if not allocator["free_list"]:
+        raise RuntimeError("Out of memory: no free KV blocks")
+
+    # Step 2: Remove one available block
+    block_id = allocator["free_list"].pop()
+
+    # Step 3: Create sequence entry if needed
+    if seq_id not in allocator["seq_tables"]:
+        allocator["seq_tables"][seq_id] = []
+
+    # Step 4: Assign block to this sequence
+    allocator["seq_tables"][seq_id].append(block_id)
+
+    # Step 5: Return the allocated block ID
+    return block_id
+
